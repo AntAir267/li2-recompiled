@@ -1,0 +1,13 @@
+# generated from the user's game files, builds, local tools and scratch
+gen/
+build/
+work/
+.venv/
+.claude/
+third_party/*
+!third_party/README.md
+__pycache__/
+!third_party/dr_libs/
+!third_party/pl_mpeg/
+!third_party/dmusic/
+.venv
