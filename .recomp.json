@@ -1,0 +1,21 @@
+{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "LEGO Island 2: The Brickster's Revenge",
+  "wikidata": "Q2132221",
+  "system": "PC (Windows)",
+  "type": "recomp",
+  "original": { "revision": "English Version 2", "sha1": "0d43741e15bc309c3bb370d4eb49ec142d149ca9" },
+  "project": "LEGO Island 2 Recompiled",
+  "status": "in-progress",
+  "targets": ["Linux"],
+  "toolchain": "1nsane-recompiled",
+  "approach": "Static recompilation of the Windows exe to C, with a Windows and DirectX stand-in on SDL3 and Vulkan",
+  "started": "2026-10-25",
+  "maintainers": [{ "name": "AntAir267", "link": "https://github.com/AntAir267" }],
+  "links": [
+    { "label": "Build guide", "url": "https://github.com/AntAir267/li2-recompiled/blob/main/BUILDING.md" },
+    { "label": "Design notes", "url": "https://github.com/AntAir267/li2-recompiled/blob/main/DESIGN.md" }
+  ],
+  "help": ["Playing it start to finish and reporting bugs", "Testing the areas past the town"],
+  "notes": "Early work. The town, music and sound, movies and a controller work, but nobody has played it start to finish yet; the other areas have only had scripted test runs. Adds widescreen, a frame-rate fix and optional button prompts."
+}
