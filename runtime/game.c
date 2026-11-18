@@ -156,12 +156,19 @@ static int riding(void) { return riding_frame != ~0ul && frame_count - riding_fr
 /* Dialogue: the game ends a line on the talk action (ACTION 3: Left Shift, the controller's B)
    [verified: tests/dialogue_probe.sh: of Space, Return, Escape, Tab, Left Ctrl, Left Shift and
    the four buttons, only Left Shift and B end the first line of the town's opening early].
-   While a line plays in a cutscene (a speech stream, mss32.c; the game's own test 0x441102:
+   While a line plays in a cutscene (its speech stream, below; the game's own test 0x441102:
    0x5d3fd5c set or 0x5d399d8 = 1), Space and Return are the talk action too. */
-int mss_speech_playing(void);
+/* the game's line of speech (0x85995e opens it: the sound object 0x9d0d60's stream, +0x1a38) is
+   playing: Miles' AIL_stream_status (the import 0x5de472c) says 4 */
+static int speech_playing(void)
+{
+    uint32_t h = R32(0x9d2798u);
+    CPU *c = current_cpu();
+    return h && c && guest_call(c, R32(0x5de472cu), 1, h) == 4;
+}
 static int in_dialogue(void)
 {
-    return (R32(0x5d3fd5cu) || R8(0x5d399d8u) == 1) && mss_speech_playing();
+    return (R32(0x5d3fd5cu) || R8(0x5d399d8u) == 1) && speech_playing();
 }
 
 static int hook_input_read_fn(CPU *c)
@@ -510,12 +517,8 @@ void game_frame(unsigned long frame)
     mss_frame();                        /* Miles: stream callbacks, 3D gains */
 }
 
-/* pad.c asks whether the player is driving (for its own button handling): not known yet */
-int game_driving(void) { return 0; }
 /* win.c: the screen's refresh changed (a frame rate that follows it) */
 void frame_rate_reapply(void) {}
-/* pad.c: the game's own use of the controller, once a frame */
-void padgame_frame(unsigned long frame) { (void)frame; }
 /* force feedback: the game has none, so no rumble is asked for */
 int ifc_rumble_wanted(void) { return 0; }
 void ifc_frame(unsigned long frame) { (void)frame; }

@@ -16,7 +16,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 if [ $# -lt 1 ]; then
-    sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
     exit 1
 fi
 src=$(realpath "$1")
@@ -64,6 +64,7 @@ if [ ! -f "$user/gm.dls" ]; then
     [ -f "$user/gm.dls" ] || echo "gm.dls: not found (some music instruments will be silent; see README)"
 fi
 
+[ -f third_party/antistatic/translator/recomp.py ] || git submodule update --init
 make GAME="$game"
 make GAME="$game" install
 echo "Done: LEGO Island 2 is in the applications menu."

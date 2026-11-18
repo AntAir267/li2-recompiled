@@ -49,11 +49,15 @@ Checks: `make build/fncheck` and `tests/hashcheck.sh`; see [tests/README.md](tes
 
 ## Layout
 
-- `tools/` the translator (Python + Capstone)
+- `third_party/antistatic/` the AntiStatic recompilation toolkit (a git submodule pinned at a
+  release): the translator (Python + Capstone) and the Windows/DirectX stand-in the translated code
+  runs on (its core, DirectX 6/7 renderer, Miles and DirectMusic)
+- `runtime/` this game's own code on top of it: `port.h`, the hooks and fixes (`game.c`), the
+  options screens (`menu.c`), the hand-written draw code (`native.c`, `skin.c`), the movies,
+  the frame-rate fix, the button prompts and the controller layout (`port_li2.c`)
 - `builds/` what is known about each supported exe (addresses only)
-- `runtime/` the Windows/DirectX stand-in the translated code runs on
-- `third_party/` dmusic (GothicKit, MIT), dr_mp3 (public domain) and pl_mpeg (MIT) are kept here;
-  SDL3 is built locally and not committed
+- `tools/` this port's own tools (setup, the menu icon, the frame-rate checks, the prompts' pictures)
+- `third_party/` pl_mpeg (MIT) is kept here; SDL3 is built locally and not committed
 - `gen/`, `build/`, `work/` generated from your game, builds, scratch (never committed)
 
 ## Licence

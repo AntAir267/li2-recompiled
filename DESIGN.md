@@ -247,7 +247,8 @@ original, sha256 385f22...) and _data/.
   a line of a cutscene's dialogue on the talk action, ACTION 3 (Left Shift; the controller's B)
   [verified: tests/dialogue_probe.sh, the town's opening: of Space, Return, Escape, Tab, Left
   Ctrl, Left Shift and A/B/X/Y only Left Shift and B ended its first line]. While a line plays in
-  a cutscene (a stream from sounds/speech, mss32.c mss_speech_playing; the game's own cutscene
+  a cutscene (its speech stream playing, asked of Miles as the game would: since the AntiStatic
+  move, game.c speech_playing; the game's own cutscene
   test 0x441102: 0x5d3fd5c set or 0x5d399d8 = 1), Space and Return (and so the controller's X)
   are the talk action too (the input word, hook 0x41f9c9) [verified: the probe again: Space and
   Return end the line as Left Shift does; run hashes unchanged].
@@ -259,10 +260,12 @@ original, sha256 385f22...) and _data/.
   freestyle in the air). Rails are taken without a button. Checked with scripted input and
   LI2_ANIM_LOG (each animation started, 0x4232a3, with its callers): B + right FRONTGRAB, B + back
   MIDDLEGRAB, X + forward FANCYNANCY, D-pad as the stick.
-- Launching: make install writes the applications-menu entry (li2-native.desktop: build/li2
-  --play --game <folder>, the exe's own icon scaled up by whole pixels); --play (or no arguments)
-  starts full screen unless options.txt's display = window; Alt+Enter switches (to a maximized
-  window) and is remembered. Losing focus is not passed on to the game (its WM_ACTIVATE handler
+- Launching: make install writes the applications-menu entry (li2-native.desktop: build/li2 with
+  no arguments, which plays the game in ~/.local/share/li2-native/game; the exe's own icon scaled
+  up by whole pixels). Since the AntiStatic move (2026-11-12) there is no --play: no arguments
+  plays, any argument is a test run; it starts full screen unless options.txt's display = window
+  (port.h PORT_DEFAULT_DISPLAY);
+  Alt+Enter switches (to a maximized window) and is remembered. Losing focus is not passed on to the game (its WM_ACTIVATE handler
   would minimise it): it keeps running, input stops.
 - Movies (video.c): DirectShow filter graph stand-in on pl_mpeg; frames shown through a runtime
   picture (ddraw_image_*) pillarboxed to the window, soundtrack a runtime voice; a movie that
@@ -479,6 +482,55 @@ silent; tests/perf_town.sh before and after.
   hand-written, the state set directly) would save ~1-2% now; it is the seam for enhancements
   later (materials and meshes known by the renderer: GPU skinning, instancing), which wait for
   the game to be fully functional. Held until then.
+
+## On AntiStatic (2026-11-12)
+
+The translator and the runtime's core, DirectX 6/7 renderer, Miles and DirectMusic are now the
+AntiStatic toolkit's (third_party/antistatic, a git submodule pinned at v0.2.41; its
+docs/MOVING.md), which took them in from this port and its siblings. What stays here is the
+game's: port.h, game.c, menu.c, native.c, skin.c, prompts.c, video.c, framerate.c, ftrace.c,
+widescreen.c, and port_li2.c, the hooks the toolkit calls: the display layer's set-up
+(ddraw_init), the movie player's next frame at each PeekMessage, DirectMusic's CoCreateInstance,
+each frame's duration for the frame-rate fix, Miles' 3D provider (the game opens only one it knows
+by name, 0x858861, and only then sets its sound and DirectMusic up), options.txt's comments for
+this game's keys, and the controller's layout (port_pad_send: the joystick buttons, Start as
+Escape, the D-pad and stick as the arrow keys, the triggers as Z, buttons 11/12 and the mouse's
+buttons; port_pad_frame: the right stick as the mouse, the camera). port.h keeps the command
+line's "Game.exe" (PORT_CMDLINE_EXE: what this port's runtime always showed, and its recorded
+runs have in memory) and fog off by default (PORT_DEFAULT_FOG 0). The toolkit merges every
+controller into the one joystick the game sees, and makes it at start-up outside test runs. The
+speech check (game.c speech_playing) asks Miles about the game's own stream (0x9d2798) as the game
+would, instead of looking inside the old mss32.c. The MP3 speech is FFmpeg's now (the toolkit's
+Miles), not dr_mp3.
+
+Translation (v0.2.10), compared function by function with the old translator's (4,501
+functions; now 4,509):
+- x87 arithmetic through X87() (fadd / fsub / fmul / fdiv results kept to the x87's rounding).
+- FNSTSW where only AH is read gives fpu_sw_cc (the condition bits and the stack top, not the
+  exception bits nobody reads).
+- Import calls through API_CALL (direct, except while a function check records them).
+- Hooked functions: capture_return lines, only while a device recording runs.
+- 8 new functions, 11 changed: blocks other functions jump to (four lone rets, 0x4100b0's
+  mov eax / ret, the prologue at 0x40e2d0, 0x40da40, 0x40e250, 0x8678f0) are functions of their
+  own now, reached by a tail call instead of a goto: the same instructions.
+- 0x842b20's bts and 0x84c387's xlatb written differently, the same values.
+Nothing else differs.
+
+Checked against the runs recorded before the move (2026-11-18, v0.2.41): the menu's hashes are
+identical (memory and drawing, 30 of 30), the dialogue probe identical for all 11 inputs, the five
+zones run with d3d7 and native agreeing. The town is identical to frame 6240 and the zones into
+each area, then drift: in --test every reading of the clock moves it 0.001 ms, and the toolkit's
+Miles still reads it a little differently from the old mss32.c (found with a backtrace on every
+reading: AIL_set_3D_sample_file paused and rewound the old voice first, fixed in v0.2.41), so a
+scripted press lands a frame apart. The frames compared draw correctly; the scene is a moment
+apart.
+
+Gaps found on the way (told to the AntiStatic chat): v0.2.0 named its one 3D provider "Miles Fast
+2D Positional Audio" (now port_miles_providers); MP3 streams failed silently on v0.2.0 (fixed in
+v0.2.2: the renderer's swr_init replaced FFmpeg's); there is no --play (no arguments plays: the
+menu entry changed); frame_limit has no "auto" (the FRAME LIMIT row's on, with VSYNC
+off, no longer limits); Miles never calls a stream's end callback (the game's only pauses the
+finished stream, so nothing changes here).
 
 ## Ruled out
 

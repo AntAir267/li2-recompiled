@@ -5,12 +5,16 @@ A copy of the CD gives the movies; without it the game plays without them.
 
 ## Packages
 
-Debian/Ubuntu names: `build-essential python3 python3-venv libvulkan-dev zlib1g-dev cmake`, plus
+Debian/Ubuntu names: `build-essential python3 python3-venv libvulkan-dev zlib1g-dev cmake
+libavformat-dev libavcodec-dev libswresample-dev libavutil-dev` (FFmpeg: the speech), plus
 [SDL3's own build dependencies](https://wiki.libsdl.org/SDL3/README-linux#build-dependencies)
 (X11/Wayland, ALSA/PulseAudio/PipeWire and udev development packages). `glslang-tools` is only needed to change
-a shader: the compiled shaders are in the repository.
+a shader: the compiled shaders are in the toolkit.
 
 ## Steps
+
+0. The toolkit (a git submodule): clone with `--recursive`, or in a clone
+   `git submodule update --init`.
 
 1. Python with Capstone (the translator's disassembler) and Pillow (the menu icon), in the
    repository's `.venv`:
@@ -28,7 +32,8 @@ a shader: the compiled shaders are in the repository.
    Translating takes about a minute and compiling several more (`make JOBS=4` for fewer parallel
    compiles). Nothing of the game is copied or changed. Later builds: `make`.
 
-4. Run it from the applications menu, or `build/li2 --play`.
+4. Run it from the applications menu, or `build/li2` (with no arguments: any argument makes it a
+   test run).
 
    Some of the game's music uses the General MIDI instruments of Windows' `gm.dls`: copy it from
    a Windows installation (`C:\Windows\System32\drivers\gm.dls`) into `~/.local/share/li2-native`.

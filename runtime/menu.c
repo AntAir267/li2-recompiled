@@ -42,9 +42,9 @@ typedef struct {
 void d3d_fog_set(int on);
 void framerate_steps_set(int on);
 void frame_limit_options(void);
-void pad_camera_speed_set(int speed);
+void camera_speed_set(int speed);
 void win_rumble_set(int on);
-void pad_deadzone_set(double percent);
+void pad_options(void);
 void camera_tilt_set(int percent);
 void vk_options(void);
 void d3d_gpu_transform_set(int on);
@@ -75,7 +75,7 @@ static void cam_set(int v)
     char b[16];
     snprintf(b, sizeof b, "%d", v * 12);
     option_set("camera_speed", b);
-    pad_camera_speed_set(v * 12);
+    camera_speed_set(v * 12);
 }
 
 /* the frame limit: on = auto (the screen's refresh), off = none; a number in options.txt shows as on */
@@ -94,7 +94,7 @@ static void dz_set(int v)
     char b[16];
     snprintf(b, sizeof b, "%d", v / 5);
     option_set("controller_deadzone", b);
-    pad_deadzone_set(v / 5.0);
+    pad_options();
 }
 
 /* CAMERA TILT: how much of the game's own downward tilt the camera keeps, 0..100 % (game.c) */

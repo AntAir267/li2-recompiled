@@ -25,7 +25,7 @@ run once a frame can be told from code not reached in the tests.
 usage: tools/fpscheck.py <game folder> <build config> [cover.txt frames [more cover.txt...]] > report.txt
 (calls a frame from the first coverage file and its frames; 'elsewhere': run in another one)"""
 import bisect, struct, sys, os
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'third_party', 'antistatic', 'translator'))
 from pe import PE
 from x86 import Decoder
 

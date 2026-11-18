@@ -1,11 +1,12 @@
 Third-party code.
 
 Committed (vendored):
-- dmusic/: GothicKit dmusic (MIT, dmusic/LICENSE.md) with TinySoundFont (MIT), patched for LEGO Island 2's
-  music (sequence tracks, DLS lookup by GUID,
-  groove fixes; changes marked "li2-rip" in the source).
-- dr_libs/dr_mp3.h: David Reid's MP3 decoder (public domain or MIT-0, at the end of the file).
 - pl_mpeg/pl_mpeg.h: Dominic Szablewski's MPEG-1 decoder (MIT, at the top of the file).
+
+A git submodule:
+- antistatic/: the AntiStatic recompilation toolkit, pinned at a release tag (the translator, the
+  runtime, and its own third-party code: GothicKit dmusic with TinySoundFont, MIT, patched for
+  this game's music). `git submodule update --init` fetches it.
 
 Built locally, not committed:
 - SDL3 (zlib licence), 3.4.18 or later: the official source release from
