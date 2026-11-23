@@ -486,7 +486,7 @@ silent; tests/perf_town.sh before and after.
 ## On AntiStatic (2026-11-12)
 
 The translator and the runtime's core, DirectX 6/7 renderer, Miles and DirectMusic are now the
-AntiStatic toolkit's (third_party/antistatic, a git submodule pinned at v0.2.41; its
+AntiStatic toolkit's (third_party/antistatic, a git submodule pinned at v0.2.46; its
 docs/MOVING.md), which took them in from this port and its siblings. What stays here is the
 game's: port.h, game.c, menu.c, native.c, skin.c, prompts.c, video.c, framerate.c, ftrace.c,
 widescreen.c, and port_li2.c, the hooks the toolkit calls: the display layer's set-up
@@ -516,14 +516,19 @@ functions; now 4,509):
 - 0x842b20's bts and 0x84c387's xlatb written differently, the same values.
 Nothing else differs.
 
-Checked against the runs recorded before the move (2026-11-18, v0.2.41): the menu's hashes are
-identical (memory and drawing, 30 of 30), the dialogue probe identical for all 11 inputs, the five
-zones run with d3d7 and native agreeing. The town is identical to frame 6240 and the zones into
-each area, then drift: in --test every reading of the clock moves it 0.001 ms, and the toolkit's
-Miles still reads it a little differently from the old mss32.c (found with a backtrace on every
-reading: AIL_set_3D_sample_file paused and rewound the old voice first, fixed in v0.2.41), so a
-scripted press lands a frame apart. The frames compared draw correctly; the scene is a moment
-apart.
+Checked against the runs recorded before the move (2026-11-18, v0.2.44): the menu's hashes are
+identical (memory and drawing, 30 of 30), the dialogue probe identical for all 11 inputs (both
+lines' end and start), the five zones run with d3d7 and native agreeing. In the town every reading
+of the --test clock (each moves it 0.001 ms) now matches the old runtime call for call, and the
+drawing is identical through frame 6320 [verified: a backtrace on every reading, frames 6219-6221
+and 6273-6275, and every frame hashed to 6320]; three of the toolkit's Miles differences were found
+that way and fixed there (v0.2.41, v0.2.44). What still differs, from frame 6275, is memory only:
+the first speech line's decoded samples, kept in program memory (PORT_MILES_COPY_SAMPLES), are off
+by 1 here and there, FFmpeg's float-to-16-bit rounding against the old dr_mp3's. The game never
+reads them; accepted as explained (the toolkit keeps one MP3 decoder). The baselines were
+recorded again on v0.2.46 (2026-11-23), which makes the x87's sin, cos, atan, log and 2^x and SSE's
+reciprocal estimates the same on Intel and AMD PCs (PORT_X87_PORTABLE, PORT_SSE_PORTABLE: on by
+default), so they hold on every PC; against the old ones v0.2.46 compares as v0.2.44 did.
 
 Gaps found on the way (told to the AntiStatic chat): v0.2.0 named its one 3D provider "Miles Fast
 2D Positional Audio" (now port_miles_providers); MP3 streams failed silently on v0.2.0 (fixed in

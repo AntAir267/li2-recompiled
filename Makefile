@@ -42,7 +42,8 @@ gen/funcs.h gen/table.c gen/stubs.c gen/image.h: gen/.translated ;
 gen/files.mk: gen/.translated
 	@echo 'GEN_CODE = $(sort $(wildcard gen/code_*.c))' > $@
 
-build/obj/gen_%.o: gen/%.c gen/funcs.h $(TK)/runtime/cpu/cpu.h | build/obj
+# (cpu.h reads port.h: the generated code depends on both)
+build/obj/gen_%.o: gen/%.c gen/funcs.h $(wildcard $(TK)/runtime/cpu/*.h) runtime/port.h | build/obj
 	$(CC) $(CFLAGS_GEN) -c $< -o $@
 
 build/obj/rt_%.o: runtime/%.c $(RT_H) gen/funcs.h | build/obj
@@ -72,7 +73,7 @@ build/li2: $(RT_OBJ) $(GEN_OBJ) $(DM_OBJ)
 UNICORN ?= $(firstword $(wildcard .venv/lib/python3*/site-packages/unicorn))
 build/obj/rt_main_nomain.o: $(TK)/runtime/win32/main.c $(RT_H) gen/funcs.h | build/obj
 	$(CC) $(CFLAGS_RT) -DRUNTIME_NO_MAIN -c $< -o $@
-build/obj/gen_x87_special.o: gen/x87_special.c | build/obj
+build/obj/gen_x87_special.o: gen/x87_special.c $(wildcard $(TK)/runtime/cpu/*.h) runtime/port.h | build/obj
 	$(CC) $(CFLAGS_GEN) -c $< -o $@
 build/fncheck: tests/fncheck.c $(filter-out build/obj/tk/win32/main.o,$(RT_OBJ)) build/obj/rt_main_nomain.o $(GEN_OBJ) build/obj/gen_x87_special.o $(DM_OBJ)
 	$(CC) $(CFLAGS_RT) -I$(UNICORN)/include -o $@ $^ $(UNICORN)/lib/libunicorn.a $(LDFLAGS) -lrt
