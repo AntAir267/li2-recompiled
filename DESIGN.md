@@ -486,7 +486,7 @@ silent; tests/perf_town.sh before and after.
 ## On AntiStatic (2026-11-12)
 
 The translator and the runtime's core, DirectX 6/7 renderer, Miles and DirectMusic are now the
-AntiStatic toolkit's (third_party/antistatic, a git submodule pinned at v0.2.46; its
+AntiStatic toolkit's (third_party/antistatic, a git submodule pinned at v0.2.47; its
 docs/MOVING.md), which took them in from this port and its siblings. What stays here is the
 game's: port.h, game.c, menu.c, native.c, skin.c, prompts.c, video.c, framerate.c, ftrace.c,
 widescreen.c, and port_li2.c, the hooks the toolkit calls: the display layer's set-up
@@ -529,6 +529,14 @@ reads them; accepted as explained (the toolkit keeps one MP3 decoder). The basel
 recorded again on v0.2.46 (2026-11-23), which makes the x87's sin, cos, atan, log and 2^x and SSE's
 reciprocal estimates the same on Intel and AMD PCs (PORT_X87_PORTABLE, PORT_SSE_PORTABLE: on by
 default), so they hold on every PC; against the old ones v0.2.46 compares as v0.2.44 did.
+
+Exception handling (2026-11-23, v0.2.47): the exe's MSVC 6 C runtime is linked in, so its
+__CxxFrameHandler (0x8405c0: each __ehhandler stub loads a FuncInfo, magic 0x19930520, and jumps
+there) and _except_handler3 (0x84b00c: 14 SEH3 frames push it) are named in builds/en_v2.py
+(CXX_FRAME_HANDLERS, SEH_HANDLERS); with them the translator finds 40 C++ try/catch tables and 14
+__try scope tables (none before), so a caught exception goes on. No test route reaches one: the
+hashes are unchanged. The v0.2.46 baselines held on the Steam Deck (menu, town) and on the studio
+PC (Intel, software Vulkan: the zones and dialogue) as recorded on the T7.
 
 Gaps found on the way (told to the AntiStatic chat): v0.2.0 named its one 3D provider "Miles Fast
 2D Positional Audio" (now port_miles_providers); MP3 streams failed silently on v0.2.0 (fixed in

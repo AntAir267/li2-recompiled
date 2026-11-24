@@ -16,6 +16,12 @@ NOT_ENTRIES = []
 JUMP_TABLES = {}
 NONLOCAL_JUMPS = []
 NORETURN_IMPORTS = ['ExitProcess', 'ExitThread', 'TerminateProcess', 'FatalExit', 'FatalAppExitA']
+# The exception handlers of the exe's statically linked MSVC 6 C runtime (not imported, so the
+# translator can't recognise them by name): C++ try/catch tables found through __CxxFrameHandler
+# (0x8405c0: every __ehhandler stub loads a FuncInfo, magic 0x19930520, and jumps there) and
+# __try scope tables through _except_handler3 (0x84b00c: 14 SEH3 frames push it)
+CXX_FRAME_HANDLERS = [0x8405c0]
+SEH_HANDLERS = [0x84b00c]
 # Functions the runtime may hook (hook_<name>, run at the function's entry; returns 1 if it did
 # the call itself).
 HOOKS = {
